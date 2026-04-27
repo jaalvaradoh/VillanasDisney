@@ -32,9 +32,17 @@ preguntas = [
     }
 ]
 
-# Estado de sesión
+# Inicializar estado
 if "preguntas_mezcladas" not in st.session_state:
     st.session_state.preguntas_mezcladas = random.sample(preguntas, len(preguntas))
+
+if "opciones_mezcladas" not in st.session_state:
+    st.session_state.opciones_mezcladas = {
+        i: random.sample(p["opciones"], len(p["opciones"]))
+        for i, p in enumerate(st.session_state.preguntas_mezcladas)
+    }
+
+if "respuestas_usuario" not in st.session_state:
     st.session_state.respuestas_usuario = {}
 
 st.title("👑 Trivia de Villanas Disney")
@@ -44,11 +52,11 @@ st.write("Responde las 5 preguntas:")
 for i, p in enumerate(st.session_state.preguntas_mezcladas):
     st.subheader(f"Pregunta {i+1}: {p['pregunta']}")
 
-    opciones_mezcladas = random.sample(p["opciones"], len(p["opciones"]))
+    opciones = st.session_state.opciones_mezcladas[i]
 
     respuesta = st.radio(
         "Selecciona una opción:",
-        opciones_mezcladas,
+        opciones,
         key=f"pregunta_{i}"
     )
 
@@ -73,6 +81,9 @@ if st.button("Verificar respuestas"):
 # Botón reiniciar
 if st.button("Jugar de nuevo"):
     st.session_state.preguntas_mezcladas = random.sample(preguntas, len(preguntas))
+    st.session_state.opciones_mezcladas = {
+        i: random.sample(p["opciones"], len(p["opciones"]))
+        for i, p in enumerate(st.session_state.preguntas_mezcladas)
+    }
     st.session_state.respuestas_usuario = {}
     st.experimental_rerun()
-
